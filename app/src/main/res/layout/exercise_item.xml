@@ -1,6 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout android:layout_width="wrap_content"
+                  android:layout_height="wrap_content">
+        <TextView
+                android:id="@+id/exerciseName"
+                android:text="Press de banca"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="10dp"/>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="wrap_content"
+                  android:layout_height="wrap_content">
+        <TextView
+                android:id="@+id/initialWeight"
+                android:text="Peso inicial: "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="10dp"/>
+        <TextView
+                android:id="@+id/initialAmountWeight"
+                android:text="20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="0dp"/>
+        <TextView
+                android:id="@+id/initialMeasurementUnit"
+                android:text="kg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="3dp"/>
+        <TextView
+                android:id="@+id/finalWeight"
+                android:text="Peso final: "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="10dp"/>
+        <TextView
+                android:id="@+id/finalAmountWeight"
+                android:text="20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="0dp"/>
+        <TextView
+                android:id="@+id/finalMeasurementUnit"
+                android:text="kg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="3dp"/>
+    </LinearLayout>
+
+</LinearLayout>
