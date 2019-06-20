@@ -11,22 +11,22 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.manuelbacallado.gymprogress.R
-import com.manuelbacallado.gymprogress.adapters.RoutineAdapter
+import com.manuelbacallado.gymprogress.adapters.ExerciseAdapter
+import com.manuelbacallado.gymprogress.adapters.TrainingDaysAdapter
 import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
-import com.manuelbacallado.gymprogress.models.Routine
+import com.manuelbacallado.gymprogress.models.Exercise
+import com.manuelbacallado.gymprogress.models.TrainingDay
 
 import kotlinx.android.synthetic.main.routine_activity.*
 import kotlinx.android.synthetic.main.recycler_view.*
-import java.time.LocalDate
-import java.time.Month
 import kotlin.collections.ArrayList
 
-class RoutineActivity : AppCompatActivity() {
+class ExerciseActivity : AppCompatActivity() {
 
-    private val list: ArrayList<Routine> by lazy { getRoutines() }
+    private val list: ArrayList<Exercise> by lazy { getTrainingDays() }
 
-    private lateinit var routineRecycler: RecyclerView
-    private lateinit var routineAdapter: RoutineAdapter
+    private lateinit var exerciseRecycler: RecyclerView
+    private lateinit var exerciseAdapter: ExerciseAdapter
     private val layoutManager by lazy { LinearLayoutManager(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,12 +42,12 @@ class RoutineActivity : AppCompatActivity() {
     }
 
     private fun setRecycler() {
-        routineRecycler = recyclerView
-        routineRecycler.setHasFixedSize(true)
-        routineRecycler.itemAnimator = DefaultItemAnimator()
-        routineRecycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        routineRecycler.layoutManager = layoutManager
-        routineAdapter = (RoutineAdapter(list, object: RecyclerViewListeners {
+        exerciseRecycler = recyclerView
+        exerciseRecycler.setHasFixedSize(true)
+        exerciseRecycler.itemAnimator = DefaultItemAnimator()
+        exerciseRecycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        exerciseRecycler.layoutManager = layoutManager
+        exerciseAdapter = (ExerciseAdapter(list, object: RecyclerViewListeners {
             override fun onClick(concrete: Any, position: Int) {
                 Toast.makeText(applicationContext, "Clic", Toast.LENGTH_LONG).show()
             }
@@ -56,7 +56,7 @@ class RoutineActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "Long Clic", Toast.LENGTH_LONG).show()
             }
         }))
-        routineRecycler.adapter = routineAdapter
+        exerciseRecycler.adapter = exerciseAdapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -75,14 +75,14 @@ class RoutineActivity : AppCompatActivity() {
         }
     }
 
-    private fun getRoutines(): ArrayList<Routine> {
-        return object: ArrayList<Routine>() {
+    private fun getTrainingDays(): ArrayList<Exercise> {
+        return object: ArrayList<Exercise>() {
             init {
-                add(Routine(1,"Routine1", LocalDate.of(2019, Month.JUNE, 20), LocalDate.of(2019, Month.JUNE, 28),8, "TRX"))
-                add(Routine(2,"Routine2", LocalDate.of(2019, Month.JUNE, 20), LocalDate.of(2019, Month.JUNE, 20), 5, "Crossfit"))
-                add(Routine(3,"Routine3", LocalDate.of(2019, Month.JUNE, 20), LocalDate.of(2019, Month.JUNE, 20), 2, "Normal"))
-                add(Routine(4,"Routine4", LocalDate.of(2019, Month.JULY, 20), LocalDate.of(2019, Month.AUGUST, 28),8, "TRX"))
-                add(Routine(5,"Routine5", LocalDate.of(2019, Month.SEPTEMBER, 20), LocalDate.of(2019, Month.SEPTEMBER, 28),8, "TRX"))
+                add(Exercise(1,"Lunes", 10, 15))
+                add(Exercise(2,"Martes", 10, 15))
+                add(Exercise(3,"Miercoles", 10, 15))
+                add(Exercise(4,"Jueves", 10, 15))
+                add(Exercise(5,"Viernes", 10, 15))
             }
         }
     }
