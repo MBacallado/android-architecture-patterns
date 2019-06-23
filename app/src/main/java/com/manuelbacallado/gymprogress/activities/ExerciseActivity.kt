@@ -1,5 +1,6 @@
 package com.manuelbacallado.gymprogress.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
@@ -78,11 +79,11 @@ class ExerciseActivity : AppCompatActivity() {
     private fun getTrainingDays(): ArrayList<Exercise> {
         return object: ArrayList<Exercise>() {
             init {
-                add(Exercise(1,"Lunes", 10, 15))
-                add(Exercise(2,"Martes", 10, 15))
-                add(Exercise(3,"Miercoles", 10, 15))
-                add(Exercise(4,"Jueves", 10, 15))
-                add(Exercise(5,"Viernes", 10, 15))
+                add(Exercise(1,"Press banca", 10, 15))
+                add(Exercise(2,"Fondos", 10, 15))
+                add(Exercise(3,"Triceps", 10, 15))
+                add(Exercise(4,"Biceps", 10, 15))
+                add(Exercise(5,"Piernas", 10, 15))
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.manuelbacallado.gymprogress.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
@@ -48,6 +49,7 @@ class TrainingDayActivity : AppCompatActivity() {
         trainingDayAdapter = (TrainingDaysAdapter(list, object: RecyclerViewListeners {
             override fun onClick(concrete: Any, position: Int) {
                 Toast.makeText(applicationContext, "Clic", Toast.LENGTH_LONG).show()
+                startActivity(Intent(applicationContext, ExerciseActivity::class.java))
             }
 
             override fun onLongClick(concrete: Any, position: Int) {

@@ -10,8 +10,8 @@ class ExerciseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bind(exercise: Exercise, listener: RecyclerViewListeners) = with(itemView) {
         exerciseName.text = exercise.exerciseName
-        initialWeight.text = exercise.initialWeight.toString()
-        finalWeight.text = exercise.finalWeight.toString()
+        initialAmountWeight.text = exercise.initialWeight.toString()
+        finalAmountWeight.text = exercise.finalWeight.toString()
         //Click events
         setOnClickListener { listener.onClick(exercise, adapterPosition) }
         setOnLongClickListener { listener.onLongClick(exercise, adapterPosition) ;true}
