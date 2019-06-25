@@ -8,14 +8,13 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.manuelbacallado.gymprogress.listener.IDatabaseFunctions
 import com.manuelbacallado.gymprogress.models.Routine
 
-class RoutineDBOpenHelper(context: Context,
-                          factory: SQLiteDatabase.CursorFactory?) :
+class RoutineDBOpenHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME,
-        factory, DATABASE_VERSION), IDatabaseFunctions {
+        null, DATABASE_VERSION), IDatabaseFunctions {
 
     override fun onCreate(db: SQLiteDatabase) {
         val CREATE_ROUTINE_TABLE = ("CREATE TABLE " +
-                TABLE_NAME + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                TABLE_NAME + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 COLUMN_NAME + " TEXT NOT NULL, " + COLUMN_START_DATE + " TEXT NOT NULL, " +
                 COLUMN_FINISH_DATE + " TEXT NOT NULL, " + COLUMN_TRAINING_DAYS + " INTEGER NOT NULL, " +
                 COLUMN_TRAINING_TYPES + " TEXT NOT NULL " + ")");
@@ -59,9 +58,23 @@ class RoutineDBOpenHelper(context: Context,
         db.delete(TABLE_NAME, COLUMN_ID + " = ?", arrayOf(routine.routineId.toString()));
     }
 
-    override fun getAllElements(obj: Any): Cursor? {
+    override fun getAllElements(obj: Any): List<Any>? {
         val db = this.readableDatabase
-        return db.rawQuery("SELECT * FROM $TABLE_NAME", null)
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME", null)
+        val list = ArrayList<Any>()
+        if (cursor.moveToFirst()) {
+            do {
+                val routine = Routine(cursor.getInt(
+                    cursor.getColumnIndex(COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
+                    cursor.getString(cursor.getColumnIndex(COLUMN_START_DATE)),
+                    cursor.getString(cursor.getColumnIndex(COLUMN_FINISH_DATE)),
+                    cursor.getInt(cursor.getColumnIndex(COLUMN_TRAINING_DAYS)),
+                    cursor.getString(cursor.getColumnIndex(COLUMN_TRAINING_TYPES)))
+                list.add(routine)
+            }while (cursor.moveToNext())
+        }
+        return list
     }
 
     companion object {

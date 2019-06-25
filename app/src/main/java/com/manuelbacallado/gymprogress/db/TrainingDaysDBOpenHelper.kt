@@ -56,10 +56,10 @@ class TrainingDaysDBOpenHelper(context: Context,
         db.delete(TABLE_NAME, COLUMN_ID + " = ?", arrayOf(trainingDay.trainingDayId.toString()));
     }
 
-    override fun getAllElements(obj: Any): Cursor? {
+    override fun getAllElements(obj: Any): List<Any>? {
         val trainingDay = obj as TrainingDay
         val db = this.readableDatabase
-        return db.rawQuery("SELECT * FROM $TABLE_NAME WHERE routineId = ?", arrayOf(trainingDay.routineId.toString()))
+        return ArrayList<Any>()//db.rawQuery("SELECT * FROM $TABLE_NAME WHERE routineId = ?", arrayOf(trainingDay.routineId.toString()))
     }
 
     companion object {

@@ -2,43 +2,47 @@ package com.manuelbacallado.gymprogress.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
 import android.widget.Toast
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.adapters.RoutineAdapter
+import com.manuelbacallado.gymprogress.db.RoutineDBOpenHelper
 import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.Routine
 
 import kotlinx.android.synthetic.main.routine_activity.*
 import kotlinx.android.synthetic.main.recycler_view.*
-import java.time.LocalDate
-import java.time.Month
 import kotlin.collections.ArrayList
 
 class RoutineActivity : AppCompatActivity() {
 
-    private val list: ArrayList<Routine> by lazy { getRoutines() }
+    private val list: ArrayList<Routine> by lazy { refreshData() }
 
     private lateinit var routineRecycler: RecyclerView
     private lateinit var routineAdapter: RoutineAdapter
     private val layoutManager by lazy { LinearLayoutManager(this) }
+
+    private lateinit var db : RoutineDBOpenHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.routine_activity)
         setSupportActionBar(toolbar)
 
+        db = RoutineDBOpenHelper(this)
         setRecycler()
+        refreshData()
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            startActivity(Intent(applicationContext, InsertRoutineActivity::class.java))
         }
     }
 
@@ -55,10 +59,32 @@ class RoutineActivity : AppCompatActivity() {
             }
 
             override fun onLongClick(concrete: Any, position: Int) {
-                Toast.makeText(applicationContext, "Long Clic", Toast.LENGTH_LONG).show()
+                openContextMenu(routineRecycler)
             }
         }))
         routineRecycler.adapter = routineAdapter
+        registerForContextMenu(routineRecycler)
+    }
+
+    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        val inflater = menuInflater
+        inflater.inflate(R.menu.options_long_clic, menu)
+    }
+
+    override fun onContextItemSelected(item: MenuItem?): Boolean {
+        val info = item?.menuInfo as AdapterView.AdapterContextMenuInfo
+        return when (item!!.itemId) {
+            R.id.edit ->{
+                Toast.makeText(applicationContext, "Mostrando Item para editar: ${list.get(info.position).name}", Toast.LENGTH_LONG).show()
+                return true
+            }
+            R.id.delete ->{
+                Toast.makeText(applicationContext, "delete", Toast.LENGTH_LONG).show()
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -77,15 +103,7 @@ class RoutineActivity : AppCompatActivity() {
         }
     }
 
-    private fun getRoutines(): ArrayList<Routine> {
-        return object: ArrayList<Routine>() {
-            init {
-                add(Routine(1,"Routine1", LocalDate.of(2019, Month.JUNE, 20), LocalDate.of(2019, Month.JUNE, 28),8, "TRX"))
-                add(Routine(2,"Routine2", LocalDate.of(2019, Month.JUNE, 20), LocalDate.of(2019, Month.JUNE, 20), 5, "Crossfit"))
-                add(Routine(3,"Routine3", LocalDate.of(2019, Month.JUNE, 20), LocalDate.of(2019, Month.JUNE, 20), 2, "Normal"))
-                add(Routine(4,"Routine4", LocalDate.of(2019, Month.JULY, 20), LocalDate.of(2019, Month.AUGUST, 28),8, "TRX"))
-                add(Routine(5,"Routine5", LocalDate.of(2019, Month.SEPTEMBER, 20), LocalDate.of(2019, Month.SEPTEMBER, 28),8, "TRX"))
-            }
-        }
+    private fun refreshData(): ArrayList<Routine> {
+        return db.getAllElements("") as ArrayList<Routine>
     }
 }

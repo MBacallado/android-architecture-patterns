@@ -78,11 +78,11 @@ class TrainingDayActivity : AppCompatActivity() {
     private fun getTrainingDays(): ArrayList<TrainingDay> {
         return object: ArrayList<TrainingDay>() {
             init {
-                add(TrainingDay(1,"Lunes", 45, "Pecho-Biceps"))
-                add(TrainingDay(2,"Martes", 70, "Full Body"))
-                add(TrainingDay(3,"Miercoles", 30, "Biceps-Triceps"))
-                add(TrainingDay(4,"Jueves", 20, "Full Body"))
-                add(TrainingDay(5,"Viernes", 50, "Hombros"))
+                //add(TrainingDay(1,"Lunes", 45, "Pecho-Biceps"))
+                //add(TrainingDay(2,"Martes", 70, "Full Body"))
+                //add(TrainingDay(3,"Miercoles", 30, "Biceps-Triceps"))
+                //add(TrainingDay(4,"Jueves", 20, "Full Body"))
+                //add(TrainingDay(5,"Viernes", 50, "Hombros"))
             }
         }
     }
