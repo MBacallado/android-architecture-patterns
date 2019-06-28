@@ -8,11 +8,14 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.adapters.TrainingDaysAdapter
+import com.manuelbacallado.gymprogress.db.TrainingDaysDBOpenHelper
 import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.TrainingDay
 
@@ -22,21 +25,28 @@ import kotlin.collections.ArrayList
 
 class TrainingDayActivity : AppCompatActivity() {
 
-    private val list: ArrayList<TrainingDay> by lazy { getTrainingDays() }
+    private val list: ArrayList<TrainingDay> by lazy { refreshData() }
 
     private lateinit var trainingDayRecycler: RecyclerView
     private lateinit var trainingDayAdapter: TrainingDaysAdapter
     private val layoutManager by lazy { LinearLayoutManager(this) }
+
+    private var longClickItemPosition: Int = 0
+    private var routineId: Int = 0
+    private lateinit var db : TrainingDaysDBOpenHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.routine_activity)
         setSupportActionBar(toolbar)
 
+        db = TrainingDaysDBOpenHelper(this)
         setRecycler()
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            val intent = Intent(applicationContext, InsertTrainingDayActivity::class.java)
+            intent.putExtra("loadTraining", false)
+            intent.putExtra("routineId", intent.extras.getInt("routineId"))
+            startActivity(intent)
         }
     }
 
@@ -53,10 +63,39 @@ class TrainingDayActivity : AppCompatActivity() {
             }
 
             override fun onLongClick(concrete: Any, position: Int) {
-                Toast.makeText(applicationContext, "Long Clic", Toast.LENGTH_LONG).show()
+                longClickItemPosition = position
+                openContextMenu(trainingDayRecycler)
             }
         }))
         trainingDayRecycler.adapter = trainingDayAdapter
+        registerForContextMenu(trainingDayRecycler)
+    }
+
+    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        val inflater = menuInflater
+        inflater.inflate(R.menu.options_long_clic, menu)
+    }
+
+    override fun onContextItemSelected(item: MenuItem?): Boolean {
+        return when (item!!.itemId) {
+            R.id.edit ->{
+                Toast.makeText(applicationContext, "Mostrando Item para editar: ${list.get(longClickItemPosition).day}", Toast.LENGTH_LONG).show()
+                val intent = Intent(applicationContext, InsertTrainingDayActivity::class.java)
+                intent.putExtra("loadTraining", true)
+                intent.putExtra("trainingDay", list.get(longClickItemPosition))
+                startActivity(intent)
+                return true
+            }
+            R.id.delete ->{
+                Toast.makeText(applicationContext, "Mostrando Item para borrar: ${list.get(longClickItemPosition).day}", Toast.LENGTH_LONG).show()
+                db.deleteElement(list.get(longClickItemPosition))
+                list.remove(list.get(longClickItemPosition))
+                trainingDayAdapter.notifyDataSetChanged()
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -75,15 +114,7 @@ class TrainingDayActivity : AppCompatActivity() {
         }
     }
 
-    private fun getTrainingDays(): ArrayList<TrainingDay> {
-        return object: ArrayList<TrainingDay>() {
-            init {
-                //add(TrainingDay(1,"Lunes", 45, "Pecho-Biceps"))
-                //add(TrainingDay(2,"Martes", 70, "Full Body"))
-                //add(TrainingDay(3,"Miercoles", 30, "Biceps-Triceps"))
-                //add(TrainingDay(4,"Jueves", 20, "Full Body"))
-                //add(TrainingDay(5,"Viernes", 50, "Hombros"))
-            }
-        }
+    private fun refreshData(): ArrayList<TrainingDay> {
+        return db.getAllElements("") as ArrayList<TrainingDay>
     }
 }

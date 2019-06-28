@@ -11,7 +11,6 @@ import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
 import android.widget.Toast
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.adapters.RoutineAdapter
@@ -30,7 +29,7 @@ class RoutineActivity : AppCompatActivity() {
     private lateinit var routineRecycler: RecyclerView
     private lateinit var routineAdapter: RoutineAdapter
     private val layoutManager by lazy { LinearLayoutManager(this) }
-
+    private var longClickItemPosition: Int = 0
     private lateinit var db : RoutineDBOpenHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,9 +39,10 @@ class RoutineActivity : AppCompatActivity() {
 
         db = RoutineDBOpenHelper(this)
         setRecycler()
-        refreshData()
         fab.setOnClickListener { view ->
-            startActivity(Intent(applicationContext, InsertRoutineActivity::class.java))
+            val intent = Intent(applicationContext, InsertRoutineActivity::class.java)
+            intent.putExtra("loadRoutine", false)
+            startActivity(intent)
         }
     }
 
@@ -55,10 +55,13 @@ class RoutineActivity : AppCompatActivity() {
         routineAdapter = (RoutineAdapter(list, object: RecyclerViewListeners {
             override fun onClick(concrete: Any, position: Int) {
                 Toast.makeText(applicationContext, "Clic", Toast.LENGTH_LONG).show()
+                val intent = Intent(applicationContext, TrainingDayActivity::class.java)
+                intent.putExtra("routineId", list.get(position).routineId)
                 startActivity(Intent(applicationContext, TrainingDayActivity::class.java))
             }
 
             override fun onLongClick(concrete: Any, position: Int) {
+                longClickItemPosition = position
                 openContextMenu(routineRecycler)
             }
         }))
@@ -73,14 +76,20 @@ class RoutineActivity : AppCompatActivity() {
     }
 
     override fun onContextItemSelected(item: MenuItem?): Boolean {
-        val info = item?.menuInfo as AdapterView.AdapterContextMenuInfo
         return when (item!!.itemId) {
             R.id.edit ->{
-                Toast.makeText(applicationContext, "Mostrando Item para editar: ${list.get(info.position).name}", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "Mostrando Item para editar: ${list.get(longClickItemPosition).name}", Toast.LENGTH_LONG).show()
+                val intent = Intent(applicationContext, InsertRoutineActivity::class.java)
+                intent.putExtra("loadRoutine", true)
+                intent.putExtra("routine", list.get(longClickItemPosition))
+                startActivity(intent)
                 return true
             }
             R.id.delete ->{
-                Toast.makeText(applicationContext, "delete", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "Mostrando Item para borrar: ${list.get(longClickItemPosition).name}", Toast.LENGTH_LONG).show()
+                db.deleteElement(list.get(longClickItemPosition))
+                list.remove(list.get(longClickItemPosition))
+                routineAdapter.notifyDataSetChanged()
                 return true
             }
             else -> super.onOptionsItemSelected(item)

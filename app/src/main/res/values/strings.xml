@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">GymProgress</string>
+    <string name="routine_activity">Routine</string>
+    <string name="trainingDay_activity">Training Days</string>
+    <string name="exercise_activity">Exercise</string>
     <string name="action_settings">Settings</string>
     
     <string-array name="numbers">
@@ -16,6 +19,16 @@
         <item>Crossfit</item>
         <item>Trx</item>
         <item>Normal</item>
+    </string-array>
+
+    <string-array name="days">
+        <item>Lunes</item>
+        <item>Martes</item>
+        <item>Miércoles</item>
+        <item>Jueves</item>
+        <item>Viernes</item>
+        <item>Sábado</item>
+        <item>Domingo</item>
     </string-array>
 
     <string name="action_call">Edit</string>
