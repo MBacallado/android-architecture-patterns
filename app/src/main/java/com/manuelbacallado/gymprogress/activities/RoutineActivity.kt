@@ -14,9 +14,10 @@ import android.view.View
 import android.widget.Toast
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.adapters.RoutineAdapter
-import com.manuelbacallado.gymprogress.db.RoutineDBOpenHelper
+import com.manuelbacallado.gymprogress.db.dao.RoutineDAO
 import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.Routine
+import com.manuelbacallado.gymprogress.utils.Constants
 
 import kotlinx.android.synthetic.main.routine_activity.*
 import kotlinx.android.synthetic.main.recycler_view.*
@@ -30,18 +31,18 @@ class RoutineActivity : AppCompatActivity() {
     private lateinit var routineAdapter: RoutineAdapter
     private val layoutManager by lazy { LinearLayoutManager(this) }
     private var longClickItemPosition: Int = 0
-    private lateinit var db : RoutineDBOpenHelper
+    private lateinit var db : RoutineDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.routine_activity)
         setSupportActionBar(toolbar)
 
-        db = RoutineDBOpenHelper(this)
+        db = RoutineDAO(this)
         setRecycler()
         fab.setOnClickListener { view ->
             val intent = Intent(applicationContext, InsertRoutineActivity::class.java)
-            intent.putExtra("loadRoutine", false)
+            intent.putExtra(Constants.LOAD_ROUTINE_BOOLEAN, false)
             startActivity(intent)
         }
     }
@@ -54,10 +55,10 @@ class RoutineActivity : AppCompatActivity() {
         routineRecycler.layoutManager = layoutManager
         routineAdapter = (RoutineAdapter(list, object: RecyclerViewListeners {
             override fun onClick(concrete: Any, position: Int) {
-                Toast.makeText(applicationContext, "Clic", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "Mostrando routine id: ${list.get(position).routineId}", Toast.LENGTH_LONG).show()
                 val intent = Intent(applicationContext, TrainingDayActivity::class.java)
-                intent.putExtra("routineId", list.get(position).routineId)
-                startActivity(Intent(applicationContext, TrainingDayActivity::class.java))
+                intent.putExtra(Constants.ROUTINE_ID, list.get(position).routineId)
+                startActivity(intent)
             }
 
             override fun onLongClick(concrete: Any, position: Int) {
@@ -78,10 +79,10 @@ class RoutineActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.edit ->{
-                Toast.makeText(applicationContext, "Mostrando Item para editar: ${list.get(longClickItemPosition).name}", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "Mostrando Item para editar: ${list.get(longClickItemPosition).routineId}", Toast.LENGTH_LONG).show()
                 val intent = Intent(applicationContext, InsertRoutineActivity::class.java)
-                intent.putExtra("loadRoutine", true)
-                intent.putExtra("routine", list.get(longClickItemPosition))
+                intent.putExtra(Constants.LOAD_ROUTINE_BOOLEAN, true)
+                intent.putExtra(Constants.ROUTINE, list.get(longClickItemPosition))
                 startActivity(intent)
                 return true
             }
@@ -113,6 +114,6 @@ class RoutineActivity : AppCompatActivity() {
     }
 
     private fun refreshData(): ArrayList<Routine> {
-        return db.getAllElements("") as ArrayList<Routine>
+        return db.getAllElements(0) as ArrayList<Routine>
     }
 }

@@ -4,13 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.manuelbacallado.gymprogress.R
-import com.manuelbacallado.gymprogress.db.TrainingDaysDBOpenHelper
+import com.manuelbacallado.gymprogress.db.dao.TrainingDaysDAO
 import com.manuelbacallado.gymprogress.models.TrainingDay
+import com.manuelbacallado.gymprogress.utils.Constants
 import kotlinx.android.synthetic.main.insert_training_day_item.*
 
 class InsertTrainingDayActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
@@ -18,15 +18,17 @@ class InsertTrainingDayActivity : AppCompatActivity(), AdapterView.OnItemSelecte
     lateinit var trainingDay: TrainingDay
     var spinnerTrainingDay: String = ""
     var load: Boolean = false
-    private lateinit var db : TrainingDaysDBOpenHelper
+    private var routineId : Int = 0
+    private lateinit var db : TrainingDaysDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.insert_training_day_item)
 
-        db = TrainingDaysDBOpenHelper(this)
+        db = TrainingDaysDAO(this)
+        routineId = intent.extras.getInt(Constants.ROUTINE_ID)
         setDaysSpinner()
-        load = intent.extras.getBoolean("loadTrainingDay")
+        load = intent.extras.getBoolean(Constants.LOAD_TRAINING_BOOLEAN)
         if (load != null && load as Boolean){
             loadData()
         }
@@ -41,7 +43,7 @@ class InsertTrainingDayActivity : AppCompatActivity(), AdapterView.OnItemSelecte
                 spinnerTrainingDay,
                 timeText.text.toString().toInt(),
                 groupText.text.toString(),
-                intent.extras.getInt("routineId"))
+                routineId)
             if (!load) {
                 id = 0
                 trainingDayAux.trainingDayId = id
@@ -50,18 +52,18 @@ class InsertTrainingDayActivity : AppCompatActivity(), AdapterView.OnItemSelecte
                 trainingDayAux.trainingDayId = trainingDay.trainingDayId
                 db.editElement(trainingDayAux)
             }
-            startActivity(Intent(applicationContext, TrainingDayActivity::class.java))
+            val intent = Intent(applicationContext, TrainingDayActivity::class.java)
+            intent.putExtra(Constants.ROUTINE_ID, routineId)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or  Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
         }
     }
 
     private fun loadData() {
-        //load = intent.extras.getBoolean("loadTrainingDay")
-        trainingDay = intent.getParcelableExtra<TrainingDay>("trainingDay")
-        //if (load != null && load as Boolean){
+        trainingDay = intent.getParcelableExtra<TrainingDay>(Constants.TRAININGDAY)
         timeText.text = Editable.Factory.getInstance().newEditable(trainingDay.timeAmount.toString())
         groupText.text = Editable.Factory.getInstance().newEditable(trainingDay.group)
         fillTrainingDaysNameSpinner(trainingDay.day);
-        //}
     }
 
     private fun setDaysSpinner() {
@@ -75,7 +77,6 @@ class InsertTrainingDayActivity : AppCompatActivity(), AdapterView.OnItemSelecte
         val trainingDaysArray = resources.getStringArray(R.array.days)
         for (i in 0..trainingDaysArray.size-1) {
             if (trainingDaysArray.get(i).equals(trainingDaysName)) {
-                Log.d("TRAINING DAY","TRAINING DAY: ${trainingDaysArray.get(i).toString()}")
                 spinnerTrainingDays.setSelection(i)
             }
         }

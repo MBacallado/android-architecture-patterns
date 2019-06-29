@@ -2,7 +2,6 @@ package com.manuelbacallado.gymprogress.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -15,9 +14,10 @@ import android.view.View
 import android.widget.Toast
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.adapters.TrainingDaysAdapter
-import com.manuelbacallado.gymprogress.db.TrainingDaysDBOpenHelper
+import com.manuelbacallado.gymprogress.db.dao.TrainingDaysDAO
 import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.TrainingDay
+import com.manuelbacallado.gymprogress.utils.Constants
 
 import kotlinx.android.synthetic.main.routine_activity.*
 import kotlinx.android.synthetic.main.recycler_view.*
@@ -32,20 +32,23 @@ class TrainingDayActivity : AppCompatActivity() {
     private val layoutManager by lazy { LinearLayoutManager(this) }
 
     private var longClickItemPosition: Int = 0
-    private var routineId: Int = 0
-    private lateinit var db : TrainingDaysDBOpenHelper
+    private var routineId : Int = 0
+    private lateinit var db : TrainingDaysDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.routine_activity)
         setSupportActionBar(toolbar)
 
-        db = TrainingDaysDBOpenHelper(this)
+        db = TrainingDaysDAO(this)
+        if (intent.extras != null) {
+            routineId = intent.extras.getInt(Constants.ROUTINE_ID)
+        }
         setRecycler()
         fab.setOnClickListener { view ->
             val intent = Intent(applicationContext, InsertTrainingDayActivity::class.java)
-            intent.putExtra("loadTraining", false)
-            intent.putExtra("routineId", intent.extras.getInt("routineId"))
+            intent.putExtra(Constants.LOAD_TRAINING_BOOLEAN, false)
+            intent.putExtra(Constants.ROUTINE_ID, routineId)
             startActivity(intent)
         }
     }
@@ -58,8 +61,10 @@ class TrainingDayActivity : AppCompatActivity() {
         trainingDayRecycler.layoutManager = layoutManager
         trainingDayAdapter = (TrainingDaysAdapter(list, object: RecyclerViewListeners {
             override fun onClick(concrete: Any, position: Int) {
-                Toast.makeText(applicationContext, "Clic", Toast.LENGTH_LONG).show()
-                startActivity(Intent(applicationContext, ExerciseActivity::class.java))
+                Toast.makeText(applicationContext, "Mostrando training id: ${list.get(position).trainingDayId}", Toast.LENGTH_LONG).show()
+                val intent = Intent(applicationContext, ExerciseActivity::class.java)
+                intent.putExtra(Constants.TRAINING_ID, list.get(position).trainingDayId)
+                startActivity(intent)
             }
 
             override fun onLongClick(concrete: Any, position: Int) {
@@ -80,15 +85,14 @@ class TrainingDayActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.edit ->{
-                Toast.makeText(applicationContext, "Mostrando Item para editar: ${list.get(longClickItemPosition).day}", Toast.LENGTH_LONG).show()
                 val intent = Intent(applicationContext, InsertTrainingDayActivity::class.java)
-                intent.putExtra("loadTraining", true)
-                intent.putExtra("trainingDay", list.get(longClickItemPosition))
+                intent.putExtra(Constants.LOAD_TRAINING_BOOLEAN, true)
+                intent.putExtra(Constants.TRAININGDAY, list.get(longClickItemPosition))
+                intent.putExtra(Constants.ROUTINE_ID, routineId)
                 startActivity(intent)
                 return true
             }
             R.id.delete ->{
-                Toast.makeText(applicationContext, "Mostrando Item para borrar: ${list.get(longClickItemPosition).day}", Toast.LENGTH_LONG).show()
                 db.deleteElement(list.get(longClickItemPosition))
                 list.remove(list.get(longClickItemPosition))
                 trainingDayAdapter.notifyDataSetChanged()
@@ -115,6 +119,6 @@ class TrainingDayActivity : AppCompatActivity() {
     }
 
     private fun refreshData(): ArrayList<TrainingDay> {
-        return db.getAllElements("") as ArrayList<TrainingDay>
+        return db.getAllElements(routineId) as ArrayList<TrainingDay>
     }
 }

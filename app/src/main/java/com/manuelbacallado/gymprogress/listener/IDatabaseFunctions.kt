@@ -6,5 +6,5 @@ interface IDatabaseFunctions {
     fun addElement(obj: Any)
     fun editElement(obj: Any)
     fun deleteElement(obj: Any)
-    fun getAllElements(obj: Any): List<Any>?
+    fun getAllElements(id: Int): List<Any>?
 }

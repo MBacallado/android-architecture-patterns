@@ -4,13 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.manuelbacallado.gymprogress.R
-import com.manuelbacallado.gymprogress.db.RoutineDBOpenHelper
+import com.manuelbacallado.gymprogress.db.dao.RoutineDAO
 import com.manuelbacallado.gymprogress.models.Routine
+import com.manuelbacallado.gymprogress.utils.Constants
 import kotlinx.android.synthetic.main.insert_routine_item.*
 
 class InsertRoutineActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
@@ -19,16 +19,16 @@ class InsertRoutineActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     var spinnerDay: String = ""
     var spinnerTypes: String = ""
     var load: Boolean = false
-    private lateinit var db : RoutineDBOpenHelper
+    private lateinit var db : RoutineDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.insert_routine_item)
 
-        db = RoutineDBOpenHelper(this)
+        db = RoutineDAO(this)
         setTrainingDaysSpinner()
         setTrainingTypeSpinner()
-        load = intent.extras.getBoolean("loadRoutine")
+        load = intent.extras.getBoolean(Constants.LOAD_ROUTINE_BOOLEAN)
         if (load != null && load as Boolean) {
             loadData()
         }
@@ -54,19 +54,19 @@ class InsertRoutineActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                 routineAux.routineId = routine.routineId
                 db.editElement(routineAux)
             }
-            startActivity(Intent(applicationContext, RoutineActivity::class.java))
+            val intent = Intent(applicationContext, RoutineActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
         }
     }
 
     private fun loadData() {
-        routine = intent.getParcelableExtra<Routine>("routine")
-        //if (load != null && load as Boolean){
+        routine = intent.getParcelableExtra<Routine>(Constants.ROUTINE)
         routineText.text = Editable.Factory.getInstance().newEditable(routine.name)
         startDateText.text = Editable.Factory.getInstance().newEditable(routine.startDate)
         finishDateText.text = Editable.Factory.getInstance().newEditable(routine.finishDate)
         fillTrainingDaysSpinner(routine.trainingDays)
         fillTrainingTypeSpinner(routine.trainingTypes)
-        //}
     }
 
     private fun setTrainingDaysSpinner() {
@@ -80,7 +80,6 @@ class InsertRoutineActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         val numbersArray = resources.getStringArray(R.array.numbers)
         for (i in 0..numbersArray.size-1) {
             if (numbersArray.get(i).toInt() == trainingDays) {
-                Log.d("TRAINING DAY","TRAINING DAY: ${numbersArray.get(i).toString()}")
                 spinnerDays.setSelection(i)
             }
         }
@@ -97,7 +96,6 @@ class InsertRoutineActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         val typesArray = resources.getStringArray(R.array.trainingType)
         for (i in 0..typesArray.size-1) {
             if (typesArray.get(i).equals(trainingTypes)) {
-                Log.d("TRAINING TYPE","TRAINING TYPE: ${typesArray.get(i).toString()}")
                 spinnerType.setSelection(i)
             }
         }

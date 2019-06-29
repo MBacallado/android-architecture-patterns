@@ -3,6 +3,12 @@
     <string name="routine_activity">Routine</string>
     <string name="trainingDay_activity">Training Days</string>
     <string name="exercise_activity">Exercise</string>
+    <string name="insert_routine_activity">Add Routine</string>
+    <string name="edit_routine_activity">Edit Routine</string>
+    <string name="insert_training_activity">Add Training</string>
+    <string name="edit_training_activity">Edit Training</string>
+    <string name="insert_exercise_activity">Add Exercise</string>
+    <string name="edit_exercise_activity">Edit Exercise</string>
     <string name="action_settings">Settings</string>
     
     <string-array name="numbers">
