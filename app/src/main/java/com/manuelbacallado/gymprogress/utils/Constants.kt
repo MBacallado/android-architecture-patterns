@@ -37,5 +37,6 @@ class Constants {
         val TRAINING_ID = "trainingId"
         val LOAD_ROUTINE_BOOLEAN = "loadRoutine"
         val LOAD_TRAINING_BOOLEAN = "loadTraining"
+        val LOAD_EXERCISE_BOOLEAN = "loadExercise"
     }
 }

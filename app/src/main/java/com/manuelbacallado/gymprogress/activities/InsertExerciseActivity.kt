@@ -23,7 +23,7 @@ class InsertExerciseActivity : AppCompatActivity() {
 
         db = ExerciseDAO(this)
         trainingId = intent.extras.getInt(Constants.TRAINING_ID)
-        load = intent.extras.getBoolean(Constants.LOAD_TRAINING_BOOLEAN)
+        load = intent.extras.getBoolean(Constants.LOAD_EXERCISE_BOOLEAN)
         if (load != null && load as Boolean){
             loadData()
         }
@@ -32,9 +32,8 @@ class InsertExerciseActivity : AppCompatActivity() {
 
     private fun saveData() {
         buttonSave.setOnClickListener() {
-            var exerciseAux : Exercise
             var id: Int
-            exerciseAux = Exercise(0,
+            var exerciseAux = Exercise(0,
                 exerciseText.text.toString(),
                 initialWeightText.text.toString().toInt(),
                 finalWeightText.text.toString().toInt(),
@@ -58,6 +57,6 @@ class InsertExerciseActivity : AppCompatActivity() {
         exercise = intent.getParcelableExtra<Exercise>(Constants.EXERCISE)
         exerciseText.text = Editable.Factory.getInstance().newEditable(exercise.exerciseName)
         initialWeightText.text = Editable.Factory.getInstance().newEditable(exercise.initialWeight.toString())
-        initialWeightText.text = Editable.Factory.getInstance().newEditable(exercise.finalWeight.toString())
+        finalWeightText.text = Editable.Factory.getInstance().newEditable(exercise.finalWeight.toString())
     }
 }

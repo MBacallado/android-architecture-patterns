@@ -47,7 +47,7 @@ class ExerciseActivity : AppCompatActivity() {
         setRecycler()
         fab.setOnClickListener { view ->
             val intent = Intent(applicationContext, InsertExerciseActivity::class.java)
-            intent.putExtra(Constants.LOAD_TRAINING_BOOLEAN, false)
+            intent.putExtra(Constants.LOAD_EXERCISE_BOOLEAN, false)
             intent.putExtra(Constants.TRAINING_ID, trainingId)
             startActivity(intent)
         }
@@ -82,8 +82,8 @@ class ExerciseActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.edit ->{
-                val intent = Intent(applicationContext, InsertTrainingDayActivity::class.java)
-                intent.putExtra(Constants.LOAD_TRAINING_BOOLEAN, true)
+                val intent = Intent(applicationContext, InsertExerciseActivity::class.java)
+                intent.putExtra(Constants.LOAD_EXERCISE_BOOLEAN, true)
                 intent.putExtra(Constants.EXERCISE, list.get(longClickItemPosition))
                 intent.putExtra(Constants.TRAINING_ID, trainingId)
                 startActivity(intent)

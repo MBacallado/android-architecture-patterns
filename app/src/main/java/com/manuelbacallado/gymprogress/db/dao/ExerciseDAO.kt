@@ -48,7 +48,6 @@ class ExerciseDAO : IDatabaseFunctions  {
         values.put(Constants.COLUMN_EXERCISE_NAME, exercise.exerciseName)
         values.put(Constants.COLUMN_EXERCISE_INITIALWEIGHT, exercise.initialWeight)
         values.put(Constants.COLUMN_EXERCISE_FINALWEIGHT, exercise.finalWeight)
-        values.put(Constants.COLUMN_EXERCISE_FINALWEIGHT, exercise.trainingDayId)
         database.update(
             Constants.TABLE_EXERCISE_NAME, values,
             Constants.COLUMN_EXERCISE_ID + " = ?", arrayOf(exercise.exerciseId.toString()));
