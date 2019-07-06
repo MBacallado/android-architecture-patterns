@@ -12,7 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.adapters.ExerciseAdapter
-import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
+import com.manuelbacallado.gymprogress.interfaces.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.presenter.ExercisePresenter
 
 import kotlinx.android.synthetic.main.routine_activity.*

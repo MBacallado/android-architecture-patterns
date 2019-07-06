@@ -2,7 +2,7 @@ package com.manuelbacallado.gymprogress.viewholders
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
+import com.manuelbacallado.gymprogress.interfaces.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.Exercise
 import kotlinx.android.synthetic.main.exercise_item.view.*
 

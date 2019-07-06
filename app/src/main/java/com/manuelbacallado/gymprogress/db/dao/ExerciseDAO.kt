@@ -4,12 +4,12 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import com.manuelbacallado.gymprogress.db.GymProgressDBOpenHelper
-import com.manuelbacallado.gymprogress.listener.IDatabaseFunctions
+import com.manuelbacallado.gymprogress.interfaces.DatabaseFunctions
 import com.manuelbacallado.gymprogress.models.Exercise
 import com.manuelbacallado.gymprogress.utils.Constants
 import java.sql.SQLException
 
-class ExerciseDAO : IDatabaseFunctions  {
+class ExerciseDAO : DatabaseFunctions  {
 
     constructor(context: Context) {
         dbHelper = GymProgressDBOpenHelper(context)

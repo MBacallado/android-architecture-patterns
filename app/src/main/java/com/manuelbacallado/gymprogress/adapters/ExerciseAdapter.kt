@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.inflate
-import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
+import com.manuelbacallado.gymprogress.interfaces.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.Exercise
 import com.manuelbacallado.gymprogress.viewholders.ExerciseViewHolder
 

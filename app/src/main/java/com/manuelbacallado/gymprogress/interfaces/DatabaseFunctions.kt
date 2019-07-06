@@ -1,8 +1,6 @@
-package com.manuelbacallado.gymprogress.listener
+package com.manuelbacallado.gymprogress.interfaces
 
-import android.database.Cursor
-
-interface IDatabaseFunctions {
+interface DatabaseFunctions {
     fun addElement(obj: Any)
     fun editElement(obj: Any)
     fun deleteElement(obj: Any)
