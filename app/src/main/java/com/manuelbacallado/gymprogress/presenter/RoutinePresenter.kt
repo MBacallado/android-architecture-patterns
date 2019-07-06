@@ -1,7 +1,6 @@
 package com.manuelbacallado.gymprogress.presenter
 
 import android.content.Intent
-import android.widget.Toast
 import com.manuelbacallado.gymprogress.activities.InsertRoutineActivity
 import com.manuelbacallado.gymprogress.activities.RoutineActivity
 import com.manuelbacallado.gymprogress.activities.TrainingDayActivity
@@ -18,15 +17,19 @@ class RoutinePresenter(var routineView: RoutineActivity) {
         db = RoutineDAO(routineView)
     }
 
+    fun addItem() {
+        val intent = Intent(routineView.applicationContext, InsertRoutineActivity::class.java)
+        intent.putExtra(Constants.LOAD_ROUTINE_BOOLEAN, false)
+        routineView.startActivity(intent)
+    }
+
     fun clickItem(position: Int) {
-        Toast.makeText(routineView.applicationContext, "Mostrando routine id: ${list.get(position).routineId}", Toast.LENGTH_LONG).show()
         val intent = Intent(routineView.applicationContext, TrainingDayActivity::class.java)
         intent.putExtra(Constants.ROUTINE_ID, list.get(position).routineId)
         routineView.startActivity(intent)
     }
 
     fun editItem(longClickItemPosition: Int){
-        Toast.makeText(routineView.applicationContext, "Mostrando Item para editar: ${list.get(longClickItemPosition).routineId}", Toast.LENGTH_LONG).show()
         val intent = Intent(routineView.applicationContext, InsertRoutineActivity::class.java)
         intent.putExtra(Constants.LOAD_ROUTINE_BOOLEAN, true)
         intent.putExtra(Constants.ROUTINE, list.get(longClickItemPosition))
@@ -34,7 +37,6 @@ class RoutinePresenter(var routineView: RoutineActivity) {
     }
 
     fun deleteItem(longClickItemPosition: Int) {
-        Toast.makeText(routineView.applicationContext, "Mostrando Item para borrar: ${list.get(longClickItemPosition).name}", Toast.LENGTH_LONG).show()
         db.deleteElement(list.get(longClickItemPosition))
         list.remove(list.get(longClickItemPosition))
     }
