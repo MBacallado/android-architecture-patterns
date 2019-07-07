@@ -1,5 +1,6 @@
 package com.manuelbacallado.gymprogress.activities
 
+import android.arch.lifecycle.ViewModelProvider
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity;
@@ -14,10 +15,12 @@ import android.view.View
 import android.widget.Toast
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.adapters.RoutineAdapter
-import com.manuelbacallado.gymprogress.db.dao.RoutineDAO
 import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.Routine
 import com.manuelbacallado.gymprogress.utils.Constants
+import com.manuelbacallado.gymprogress.viewmodels.RoutineViewModel
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.routine_activity.*
 import kotlinx.android.synthetic.main.recycler_view.*
@@ -25,21 +28,22 @@ import kotlin.collections.ArrayList
 
 class RoutineActivity : AppCompatActivity() {
 
-    private val list: ArrayList<Routine> by lazy { refreshData() }
+    private lateinit var compositeDisposable: CompositeDisposable
+    private lateinit var routineViewModel: RoutineViewModel
 
     private lateinit var routineRecycler: RecyclerView
     private lateinit var routineAdapter: RoutineAdapter
     private val layoutManager by lazy { LinearLayoutManager(this) }
     private var longClickItemPosition: Int = 0
-    private lateinit var db : RoutineDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.routine_activity)
         setSupportActionBar(toolbar)
 
-        db = RoutineDAO(this)
-        setRecycler()
+        routineViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(RoutineViewModel::class.java)
+        routineViewModel.setDBContext(applicationContext)
+
         fab.setOnClickListener { view ->
             val intent = Intent(applicationContext, InsertRoutineActivity::class.java)
             intent.putExtra(Constants.LOAD_ROUTINE_BOOLEAN, false)
@@ -47,7 +51,29 @@ class RoutineActivity : AppCompatActivity() {
         }
     }
 
-    private fun setRecycler() {
+    override fun onResume() {
+        super.onResume()
+        bind();
+    }
+
+    override fun onPause() {
+        unBind()
+        super.onPause()
+    }
+
+    private fun bind() {
+        compositeDisposable = CompositeDisposable()
+        compositeDisposable.add(routineViewModel.getRoutines()
+            .subscribeOn(Schedulers.computation())
+            .observeOn(Schedulers.single())
+            .subscribe(this::setRecycler))
+    }
+
+    private fun unBind() {
+        compositeDisposable.clear()
+    }
+
+    private fun setRecycler(list: ArrayList<Routine>) {
         routineRecycler = recyclerView
         routineRecycler.setHasFixedSize(true)
         routineRecycler.itemAnimator = DefaultItemAnimator()
@@ -79,17 +105,14 @@ class RoutineActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.edit ->{
-                Toast.makeText(applicationContext, "Mostrando Item para editar: ${list.get(longClickItemPosition).routineId}", Toast.LENGTH_LONG).show()
                 val intent = Intent(applicationContext, InsertRoutineActivity::class.java)
                 intent.putExtra(Constants.LOAD_ROUTINE_BOOLEAN, true)
-                intent.putExtra(Constants.ROUTINE, list.get(longClickItemPosition))
+                intent.putExtra(Constants.ROUTINE, routineViewModel.editItem(longClickItemPosition))
                 startActivity(intent)
                 return true
             }
             R.id.delete ->{
-                Toast.makeText(applicationContext, "Mostrando Item para borrar: ${list.get(longClickItemPosition).name}", Toast.LENGTH_LONG).show()
-                db.deleteElement(list.get(longClickItemPosition))
-                list.remove(list.get(longClickItemPosition))
+                routineViewModel.deleteItem(longClickItemPosition)
                 routineAdapter.notifyDataSetChanged()
                 return true
             }
@@ -111,9 +134,5 @@ class RoutineActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun refreshData(): ArrayList<Routine> {
-        return db.getAllElements(0) as ArrayList<Routine>
     }
 }

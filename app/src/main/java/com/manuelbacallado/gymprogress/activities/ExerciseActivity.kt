@@ -1,5 +1,6 @@
 package com.manuelbacallado.gymprogress.activities
 
+import android.arch.lifecycle.ViewModelProvider
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity;
@@ -14,10 +15,12 @@ import android.view.View
 import android.widget.Toast
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.adapters.ExerciseAdapter
-import com.manuelbacallado.gymprogress.db.dao.ExerciseDAO
 import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.Exercise
 import com.manuelbacallado.gymprogress.utils.Constants
+import com.manuelbacallado.gymprogress.viewmodels.ExerciseViewModel
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.routine_activity.*
 import kotlinx.android.synthetic.main.recycler_view.*
@@ -25,7 +28,8 @@ import kotlin.collections.ArrayList
 
 class ExerciseActivity : AppCompatActivity() {
 
-    private val list: ArrayList<Exercise> by lazy { refreshData() }
+    private lateinit var compositeDisposable: CompositeDisposable
+    private lateinit var exerciseViewModel: ExerciseViewModel
 
     private lateinit var exerciseRecycler: RecyclerView
     private lateinit var exerciseAdapter: ExerciseAdapter
@@ -33,18 +37,20 @@ class ExerciseActivity : AppCompatActivity() {
 
     private var longClickItemPosition: Int = 0
     private var trainingId : Int = 0
-    private lateinit var db : ExerciseDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.routine_activity)
         setSupportActionBar(toolbar)
 
-        db = ExerciseDAO(this)
+        exerciseViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(ExerciseViewModel::class.java)
+        exerciseViewModel.setDBContext(applicationContext)
+
         if (intent.extras != null) {
             trainingId = intent.extras.getInt(Constants.TRAINING_ID)
         }
-        setRecycler()
+
+        exerciseViewModel.setId(trainingId)
         fab.setOnClickListener { view ->
             val intent = Intent(applicationContext, InsertExerciseActivity::class.java)
             intent.putExtra(Constants.LOAD_EXERCISE_BOOLEAN, false)
@@ -53,7 +59,29 @@ class ExerciseActivity : AppCompatActivity() {
         }
     }
 
-    private fun setRecycler() {
+    override fun onResume() {
+        super.onResume()
+        bind();
+    }
+
+    override fun onPause() {
+        unBind()
+        super.onPause()
+    }
+
+    private fun bind() {
+        compositeDisposable = CompositeDisposable()
+        compositeDisposable.add(exerciseViewModel.getExercises()
+            .subscribeOn(Schedulers.computation())
+            .observeOn(Schedulers.single())
+            .subscribe(this::setRecycler))
+    }
+
+    private fun unBind() {
+        compositeDisposable.clear()
+    }
+
+    private fun setRecycler(list: ArrayList<Exercise>) {
         exerciseRecycler = recyclerView
         exerciseRecycler.setHasFixedSize(true)
         exerciseRecycler.itemAnimator = DefaultItemAnimator()
@@ -84,14 +112,13 @@ class ExerciseActivity : AppCompatActivity() {
             R.id.edit ->{
                 val intent = Intent(applicationContext, InsertExerciseActivity::class.java)
                 intent.putExtra(Constants.LOAD_EXERCISE_BOOLEAN, true)
-                intent.putExtra(Constants.EXERCISE, list.get(longClickItemPosition))
+                intent.putExtra(Constants.EXERCISE, exerciseViewModel.editItem(longClickItemPosition))
                 intent.putExtra(Constants.TRAINING_ID, trainingId)
                 startActivity(intent)
                 return true
             }
             R.id.delete ->{
-                db.deleteElement(list.get(longClickItemPosition))
-                list.remove(list.get(longClickItemPosition))
+                exerciseViewModel.deleteItem(longClickItemPosition)
                 exerciseAdapter.notifyDataSetChanged()
                 return true
             }
@@ -113,9 +140,5 @@ class ExerciseActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun refreshData(): ArrayList<Exercise> {
-        return db.getAllElements(trainingId) as ArrayList<Exercise>
     }
 }
