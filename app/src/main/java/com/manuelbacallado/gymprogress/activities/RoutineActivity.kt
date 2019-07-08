@@ -1,6 +1,5 @@
 package com.manuelbacallado.gymprogress.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator
@@ -11,43 +10,39 @@ import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.adapters.RoutineAdapter
-import com.manuelbacallado.gymprogress.db.dao.RoutineDAO
 import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.Routine
-import com.manuelbacallado.gymprogress.utils.Constants
+import com.manuelbacallado.gymprogress.presenters.RoutinePresenter
+import com.manuelbacallado.gymprogress.routers.RoutineRouter
 
 import kotlinx.android.synthetic.main.routine_activity.*
 import kotlinx.android.synthetic.main.recycler_view.*
-import kotlin.collections.ArrayList
 
 class RoutineActivity : AppCompatActivity() {
-
-    private val list: ArrayList<Routine> by lazy { refreshData() }
 
     private lateinit var routineRecycler: RecyclerView
     private lateinit var routineAdapter: RoutineAdapter
     private val layoutManager by lazy { LinearLayoutManager(this) }
     private var longClickItemPosition: Int = 0
-    private lateinit var db : RoutineDAO
+
+    private var routinePresenter = RoutinePresenter();
+    private var routineRouter = RoutineRouter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.routine_activity)
         setSupportActionBar(toolbar)
 
-        db = RoutineDAO(this)
-        setRecycler()
+        routinePresenter.init(applicationContext);
+        setRecycler(routinePresenter.getItems() as ArrayList<Routine>)
         fab.setOnClickListener { view ->
-            val intent = Intent(applicationContext, InsertRoutineActivity::class.java)
-            intent.putExtra(Constants.LOAD_ROUTINE_BOOLEAN, false)
-            startActivity(intent)
+            routineRouter.goToCreate()
         }
     }
 
-    private fun setRecycler() {
+    private fun setRecycler(list: ArrayList<Routine>) {
         routineRecycler = recyclerView
         routineRecycler.setHasFixedSize(true)
         routineRecycler.itemAnimator = DefaultItemAnimator()
@@ -55,10 +50,7 @@ class RoutineActivity : AppCompatActivity() {
         routineRecycler.layoutManager = layoutManager
         routineAdapter = (RoutineAdapter(list, object: RecyclerViewListeners {
             override fun onClick(concrete: Any, position: Int) {
-                Toast.makeText(applicationContext, "Mostrando routine id: ${list.get(position).routineId}", Toast.LENGTH_LONG).show()
-                val intent = Intent(applicationContext, TrainingDayActivity::class.java)
-                intent.putExtra(Constants.ROUTINE_ID, list.get(position).routineId)
-                startActivity(intent)
+                routineRouter.goToNextSection(list.get(position).routineId)
             }
 
             override fun onLongClick(concrete: Any, position: Int) {
@@ -79,17 +71,11 @@ class RoutineActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.edit ->{
-                Toast.makeText(applicationContext, "Mostrando Item para editar: ${list.get(longClickItemPosition).routineId}", Toast.LENGTH_LONG).show()
-                val intent = Intent(applicationContext, InsertRoutineActivity::class.java)
-                intent.putExtra(Constants.LOAD_ROUTINE_BOOLEAN, true)
-                intent.putExtra(Constants.ROUTINE, list.get(longClickItemPosition))
-                startActivity(intent)
+                routineRouter.goToEdit(routinePresenter.getItem(longClickItemPosition))
                 return true
             }
             R.id.delete ->{
-                Toast.makeText(applicationContext, "Mostrando Item para borrar: ${list.get(longClickItemPosition).name}", Toast.LENGTH_LONG).show()
-                db.deleteElement(list.get(longClickItemPosition))
-                list.remove(list.get(longClickItemPosition))
+                routinePresenter.deleteItem(longClickItemPosition)
                 routineAdapter.notifyDataSetChanged()
                 return true
             }
@@ -111,9 +97,5 @@ class RoutineActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun refreshData(): ArrayList<Routine> {
-        return db.getAllElements(0) as ArrayList<Routine>
     }
 }
