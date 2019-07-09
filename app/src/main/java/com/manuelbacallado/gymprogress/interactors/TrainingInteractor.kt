@@ -34,6 +34,4 @@ class TrainingInteractor {
         db.deleteElement(list.get(longClickItemPosition))
         list.remove(list.get(longClickItemPosition))
     }
-
-
 }
