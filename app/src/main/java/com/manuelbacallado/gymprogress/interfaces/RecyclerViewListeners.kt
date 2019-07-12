@@ -1,4 +1,4 @@
-package com.manuelbacallado.gymprogress.listener
+package com.manuelbacallado.gymprogress.interfaces
 
 interface RecyclerViewListeners {
     fun onClick(concrete: Any, position: Int)

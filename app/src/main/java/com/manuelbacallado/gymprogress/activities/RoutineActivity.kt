@@ -12,7 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.adapters.RoutineAdapter
-import com.manuelbacallado.gymprogress.listener.RecyclerViewListeners
+import com.manuelbacallado.gymprogress.interfaces.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.Routine
 import com.manuelbacallado.gymprogress.presenters.RoutinePresenter
 import com.manuelbacallado.gymprogress.routers.RoutineRouter

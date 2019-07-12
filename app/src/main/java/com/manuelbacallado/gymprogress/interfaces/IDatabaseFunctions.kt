@@ -1,6 +1,4 @@
-package com.manuelbacallado.gymprogress.listener
-
-import android.database.Cursor
+package com.manuelbacallado.gymprogress.interfaces
 
 interface IDatabaseFunctions {
     fun addElement(obj: Any)

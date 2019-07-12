@@ -2,22 +2,24 @@ package com.manuelbacallado.gymprogress.interactors
 
 import android.content.Context
 import com.manuelbacallado.gymprogress.db.dao.RoutineDAO
+import com.manuelbacallado.gymprogress.interfaces.Init
+import com.manuelbacallado.gymprogress.interfaces.PresenterInteractorFunctions
 import com.manuelbacallado.gymprogress.models.Routine
 
-class RoutineInteractor {
+class RoutineInteractor : PresenterInteractorFunctions, Init{
 
     private val list: ArrayList<Routine> by lazy { refreshData() }
     private lateinit var db : RoutineDAO
 
-    fun initDatabase (context: Context){
+    override fun init (context: Context){
         db = RoutineDAO(context)
     }
 
-    fun getItem(longClickItemPosition: Int): Any {
+    override fun getItem(longClickItemPosition: Int): Any {
         return list.get(longClickItemPosition)
     }
 
-    fun getRoutineList() : List<Any>? {
+    override fun getItems() : List<Any>? {
         return list
     }
 
@@ -25,10 +27,8 @@ class RoutineInteractor {
         return db.getAllElements(0) as ArrayList<Routine>
     }
 
-    fun deleteItem(longClickItemPosition: Int) {
+    override fun deleteItem(longClickItemPosition: Int) {
         db.deleteElement(list.get(longClickItemPosition))
         list.remove(list.get(longClickItemPosition))
     }
-
-
 }

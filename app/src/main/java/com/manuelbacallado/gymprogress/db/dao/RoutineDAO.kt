@@ -4,7 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import com.manuelbacallado.gymprogress.db.GymProgressDBOpenHelper
-import com.manuelbacallado.gymprogress.listener.IDatabaseFunctions
+import com.manuelbacallado.gymprogress.interfaces.IDatabaseFunctions
 import com.manuelbacallado.gymprogress.models.Routine
 import com.manuelbacallado.gymprogress.utils.Constants
 import java.sql.SQLException

@@ -2,25 +2,26 @@ package com.manuelbacallado.gymprogress.presenters
 
 import android.content.Context
 import com.manuelbacallado.gymprogress.interactors.RoutineInteractor
+import com.manuelbacallado.gymprogress.interfaces.Init
+import com.manuelbacallado.gymprogress.interfaces.PresenterInteractorFunctions
 
-class RoutinePresenter {
+class RoutinePresenter : PresenterInteractorFunctions, Init {
 
     private var routineInteractor = RoutineInteractor();
 
-    fun init(context: Context) {
-        routineInteractor.initDatabase(context)
+    override fun init(context: Context) {
+        routineInteractor.init(context)
     }
 
-    fun getItem(longClickItemPosition: Int): Any? {
+    override fun getItem(longClickItemPosition: Int): Any? {
         return routineInteractor.getItem(longClickItemPosition)
     }
 
-    fun getItems() : List<Any>? {
-        return routineInteractor.getRoutineList()
+    override fun getItems() : List<Any>? {
+        return routineInteractor.getItems()
     }
 
-    fun deleteItem(longClickItemPosition: Int) {
+    override fun deleteItem(longClickItemPosition: Int) {
         routineInteractor.deleteItem(longClickItemPosition)
     }
-
 }

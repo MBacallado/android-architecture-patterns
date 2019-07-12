@@ -2,29 +2,31 @@ package com.manuelbacallado.gymprogress.presenters
 
 import android.content.Context
 import com.manuelbacallado.gymprogress.interactors.TrainingInteractor
+import com.manuelbacallado.gymprogress.interfaces.Init
+import com.manuelbacallado.gymprogress.interfaces.ParentId
+import com.manuelbacallado.gymprogress.interfaces.PresenterInteractorFunctions
 
-class TrainingPresenter {
+class TrainingPresenter : PresenterInteractorFunctions, ParentId, Init {
 
     private var trainingInteractor = TrainingInteractor();
 
-    fun init(context: Context) {
-        trainingInteractor.initDatabase(context)
+    override fun init(context: Context) {
+        trainingInteractor.init(context)
     }
 
-    fun setParentId(parentId: Int) {
+    override fun setParentId(parentId: Int) {
         trainingInteractor.setParentId(parentId)
     }
 
-    fun getItem(longClickItemPosition: Int): Any? {
+    override fun getItem(longClickItemPosition: Int): Any? {
         return trainingInteractor.getItem(longClickItemPosition)
     }
 
-    fun getItems() : List<Any>? {
-        return trainingInteractor.getItemList()
+    override fun getItems() : List<Any>? {
+        return trainingInteractor.getItems()
     }
 
-    fun deleteItem(longClickItemPosition: Int) {
+    override fun deleteItem(longClickItemPosition: Int) {
         trainingInteractor.deleteItem(longClickItemPosition)
     }
-
 }
