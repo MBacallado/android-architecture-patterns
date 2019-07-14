@@ -5,21 +5,20 @@ import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.presenters.InsertExercisePresenter
-import com.manuelbacallado.gymprogress.routers.InsertExerciseRouter
 import kotlinx.android.synthetic.main.insert_exercise_item.*
 
 class InsertExerciseActivity : AppCompatActivity() {
 
-    private var insertExercisePresenter = InsertExercisePresenter();
-    private var insertExerciseRouter = InsertExerciseRouter(this)
+    private var insertExercisePresenter = InsertExercisePresenter(this);
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.insert_exercise_item)
 
         insertExercisePresenter.init(applicationContext)
-        insertExerciseRouter.initData()
-        if (insertExerciseRouter.load != null && insertExerciseRouter.load){
+
+        var load = insertExercisePresenter.getRouter().load
+        if (load != null && load){
             loadData()
         }
         saveData()
@@ -27,21 +26,21 @@ class InsertExerciseActivity : AppCompatActivity() {
 
     private fun saveData() {
         buttonSave.setOnClickListener() {
-            if (!insertExerciseRouter.load) {
+            if (!insertExercisePresenter.getRouter().load) {
                 insertExercisePresenter.saveData(exerciseText.text.toString(), initialWeightText.text.toString().toInt(),
-                    finalWeightText.text.toString().toInt(), insertExerciseRouter.parentId)
+                    finalWeightText.text.toString().toInt())
             } else {
                 insertExercisePresenter.editData(exerciseText.text.toString(), initialWeightText.text.toString().toInt(),
-                    finalWeightText.text.toString().toInt(), insertExerciseRouter.parentId,
-                    insertExerciseRouter.exercise.exerciseId)
+                    finalWeightText.text.toString().toInt())
             }
-            insertExerciseRouter.goToCreate()
+            insertExercisePresenter.goToCreate()
         }
     }
 
     private fun loadData() {
-        exerciseText.text = Editable.Factory.getInstance().newEditable(insertExerciseRouter.exercise.exerciseName)
-        initialWeightText.text = Editable.Factory.getInstance().newEditable(insertExerciseRouter.exercise.initialWeight.toString())
-        finalWeightText.text = Editable.Factory.getInstance().newEditable(insertExerciseRouter.exercise.finalWeight.toString())
+        var exercise = insertExercisePresenter.getRouter().exercise
+        exerciseText.text = Editable.Factory.getInstance().newEditable(exercise.exerciseName)
+        initialWeightText.text = Editable.Factory.getInstance().newEditable(exercise.initialWeight.toString())
+        finalWeightText.text = Editable.Factory.getInstance().newEditable(exercise.finalWeight.toString())
     }
 }

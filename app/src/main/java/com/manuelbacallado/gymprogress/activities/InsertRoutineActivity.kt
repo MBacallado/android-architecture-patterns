@@ -8,7 +8,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.presenters.InsertRoutinePresenter
-import com.manuelbacallado.gymprogress.routers.InsertRoutineRouter
 import kotlinx.android.synthetic.main.insert_routine_item.*
 
 class InsertRoutineActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
@@ -16,8 +15,7 @@ class InsertRoutineActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     var spinnerDay: String = ""
     var spinnerTypes: String = ""
 
-    private var insertRoutinePresenter = InsertRoutinePresenter();
-    private var insertRoutineRouter = InsertRoutineRouter(this)
+    private var insertRoutinePresenter = InsertRoutinePresenter(this);
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +25,8 @@ class InsertRoutineActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         setTrainingTypeSpinner()
 
         insertRoutinePresenter.init(applicationContext)
-        insertRoutineRouter.initData()
-        if (insertRoutineRouter.load != null && insertRoutineRouter.load) {
+        var load = insertRoutinePresenter.getRouter().load
+        if (load != null && load) {
             loadData()
         }
         saveData()
@@ -36,23 +34,24 @@ class InsertRoutineActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
     private fun saveData() {
         buttonSave.setOnClickListener() {
-            if (!insertRoutineRouter.load) {
+            if (!insertRoutinePresenter.getRouter().load) {
                 insertRoutinePresenter.saveData(routineText.text.toString(), startDateText.text.toString(),
                     finishDateText.text.toString(), spinnerDay.toInt(), spinnerTypes)
             } else {
                 insertRoutinePresenter.editData(routineText.text.toString(), startDateText.text.toString(),
-                    finishDateText.text.toString(), spinnerDay.toInt(), spinnerTypes, insertRoutineRouter.routine.routineId)
+                    finishDateText.text.toString(), spinnerDay.toInt(), spinnerTypes)
             }
-            insertRoutineRouter.goToCreate()
+            insertRoutinePresenter.goToCreate()
         }
     }
 
     private fun loadData() {
-        routineText.text = Editable.Factory.getInstance().newEditable(insertRoutineRouter.routine.name)
-        startDateText.text = Editable.Factory.getInstance().newEditable(insertRoutineRouter.routine.startDate)
-        finishDateText.text = Editable.Factory.getInstance().newEditable(insertRoutineRouter.routine.finishDate)
-        fillTrainingDaysSpinner(insertRoutineRouter.routine.trainingDays)
-        fillTrainingTypeSpinner(insertRoutineRouter.routine.trainingTypes)
+        var routine = insertRoutinePresenter.getRouter().routine
+        routineText.text = Editable.Factory.getInstance().newEditable(routine.name)
+        startDateText.text = Editable.Factory.getInstance().newEditable(routine.startDate)
+        finishDateText.text = Editable.Factory.getInstance().newEditable(routine.finishDate)
+        fillTrainingDaysSpinner(routine.trainingDays)
+        fillTrainingTypeSpinner(routine.trainingTypes)
     }
 
     private fun setTrainingDaysSpinner() {

@@ -15,7 +15,6 @@ import com.manuelbacallado.gymprogress.adapters.TrainingDaysAdapter
 import com.manuelbacallado.gymprogress.interfaces.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.TrainingDay
 import com.manuelbacallado.gymprogress.presenters.TrainingPresenter
-import com.manuelbacallado.gymprogress.routers.TrainingRouter
 
 import kotlinx.android.synthetic.main.routine_activity.*
 import kotlinx.android.synthetic.main.recycler_view.*
@@ -29,8 +28,7 @@ class TrainingDayActivity : AppCompatActivity() {
 
     private var longClickItemPosition: Int = 0
 
-    private var trainingPresenter = TrainingPresenter();
-    private var trainingRouter = TrainingRouter(this)
+    private var trainingPresenter = TrainingPresenter(this);
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,12 +36,10 @@ class TrainingDayActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         trainingPresenter.init(this)
-        trainingRouter.initData()
-        trainingPresenter.setParentId(trainingRouter.parentId)
 
         setRecycler(trainingPresenter.getItems() as ArrayList<TrainingDay>)
         fab.setOnClickListener { view ->
-            trainingRouter.goToCreate()
+            trainingPresenter.goToCreate()
         }
     }
 
@@ -55,7 +51,7 @@ class TrainingDayActivity : AppCompatActivity() {
         trainingDayRecycler.layoutManager = layoutManager
         trainingDayAdapter = (TrainingDaysAdapter(list, object: RecyclerViewListeners {
             override fun onClick(concrete: Any, position: Int) {
-                trainingRouter.goToNextSection(list.get(position).trainingDayId)
+                trainingPresenter.goToNextSection(list.get(position).trainingDayId)
             }
 
             override fun onLongClick(concrete: Any, position: Int) {
@@ -76,7 +72,7 @@ class TrainingDayActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.edit ->{
-                trainingRouter.goToEdit(trainingPresenter.getItem(longClickItemPosition))
+                trainingPresenter.goToEdit(trainingPresenter.getItem(longClickItemPosition))
                 return true
             }
             R.id.delete ->{

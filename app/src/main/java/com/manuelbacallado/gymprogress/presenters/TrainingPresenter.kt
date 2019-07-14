@@ -1,21 +1,25 @@
 package com.manuelbacallado.gymprogress.presenters
 
 import android.content.Context
+import com.manuelbacallado.gymprogress.activities.TrainingDayActivity
 import com.manuelbacallado.gymprogress.interactors.TrainingInteractor
 import com.manuelbacallado.gymprogress.interfaces.Init
-import com.manuelbacallado.gymprogress.interfaces.ParentId
 import com.manuelbacallado.gymprogress.interfaces.PresenterInteractorFunctions
+import com.manuelbacallado.gymprogress.routers.TrainingRouter
 
-class TrainingPresenter : PresenterInteractorFunctions, ParentId, Init {
+class TrainingPresenter(trainingDayActivity: TrainingDayActivity) : PresenterInteractorFunctions, Init {
 
     private var trainingInteractor = TrainingInteractor();
+    private var trainingRouter = TrainingRouter(trainingDayActivity)
 
     override fun init(context: Context) {
         trainingInteractor.init(context)
+        trainingRouter.initData()
+        this.setParentId()
     }
 
-    override fun setParentId(parentId: Int) {
-        trainingInteractor.setParentId(parentId)
+    fun setParentId() {
+        trainingInteractor.setParentId(trainingRouter.parentId)
     }
 
     override fun getItem(longClickItemPosition: Int): Any? {
@@ -28,5 +32,17 @@ class TrainingPresenter : PresenterInteractorFunctions, ParentId, Init {
 
     override fun deleteItem(longClickItemPosition: Int) {
         trainingInteractor.deleteItem(longClickItemPosition)
+    }
+
+    fun goToCreate() {
+        trainingRouter.goToCreate()
+    }
+
+    fun goToNextSection(trainingDayId: Int) {
+        trainingRouter.goToNextSection(trainingDayId)
+    }
+
+    fun goToEdit(item: Any?) {
+        trainingRouter.goToEdit(item)
     }
 }

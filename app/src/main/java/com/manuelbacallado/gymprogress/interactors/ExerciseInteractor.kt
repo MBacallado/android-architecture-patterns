@@ -3,11 +3,10 @@ package com.manuelbacallado.gymprogress.interactors
 import android.content.Context
 import com.manuelbacallado.gymprogress.db.dao.ExerciseDAO
 import com.manuelbacallado.gymprogress.interfaces.Init
-import com.manuelbacallado.gymprogress.interfaces.ParentId
 import com.manuelbacallado.gymprogress.interfaces.PresenterInteractorFunctions
 import com.manuelbacallado.gymprogress.models.Exercise
 
-class ExerciseInteractor : PresenterInteractorFunctions, ParentId, Init{
+class ExerciseInteractor : PresenterInteractorFunctions, Init{
 
     private val list: ArrayList<Exercise> by lazy { refreshData() }
     private lateinit var db : ExerciseDAO
@@ -17,7 +16,7 @@ class ExerciseInteractor : PresenterInteractorFunctions, ParentId, Init{
         db = ExerciseDAO(context)
     }
 
-    override fun setParentId(parentId: Int) {
+    fun setParentId(parentId: Int) {
         this.parentId = parentId
     }
 

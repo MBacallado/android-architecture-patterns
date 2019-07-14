@@ -8,24 +8,22 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.manuelbacallado.gymprogress.R
 import com.manuelbacallado.gymprogress.presenters.InsertTrainingPresenter
-import com.manuelbacallado.gymprogress.routers.InsertTrainingRouter
 import kotlinx.android.synthetic.main.insert_training_day_item.*
 
 class InsertTrainingDayActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     var spinnerTrainingDay: String = ""
 
-    private var insertTrainingPresenter = InsertTrainingPresenter();
-    private var insertTrainingRouter = InsertTrainingRouter(this)
+    private var insertTrainingPresenter = InsertTrainingPresenter(this);
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.insert_training_day_item)
 
         insertTrainingPresenter.init(applicationContext)
-        insertTrainingRouter.initData()
         setDaysSpinner()
-        if (insertTrainingRouter.load != null && insertTrainingRouter.load){
+        var load = insertTrainingPresenter.getRouter().load
+        if (load != null && load){
             loadData()
         }
         saveData()
@@ -33,21 +31,20 @@ class InsertTrainingDayActivity : AppCompatActivity(), AdapterView.OnItemSelecte
 
     private fun saveData() {
         buttonSave.setOnClickListener() {
-            if (!insertTrainingRouter.load) {
-                insertTrainingPresenter.saveData(spinnerTrainingDay, timeText.text.toString().toInt(), groupText.text.toString()
-                    ,insertTrainingRouter.parentId)
+            if (!insertTrainingPresenter.getRouter().load) {
+                insertTrainingPresenter.saveData(spinnerTrainingDay, timeText.text.toString().toInt(), groupText.text.toString())
             } else {
-                insertTrainingPresenter.editData(spinnerTrainingDay, timeText.text.toString().toInt(), groupText.text.toString(),
-                    insertTrainingRouter.trainingDay.trainingDayId, insertTrainingRouter.parentId)
+                insertTrainingPresenter.editData(spinnerTrainingDay, timeText.text.toString().toInt(), groupText.text.toString())
             }
-            insertTrainingRouter.goToCreate()
+            insertTrainingPresenter.goToCreate()
         }
     }
 
     private fun loadData() {
-        timeText.text = Editable.Factory.getInstance().newEditable(insertTrainingRouter.trainingDay.timeAmount.toString())
-        groupText.text = Editable.Factory.getInstance().newEditable(insertTrainingRouter.trainingDay.group)
-        fillTrainingDaysNameSpinner(insertTrainingRouter.trainingDay.day);
+        var training = insertTrainingPresenter.getRouter().trainingDay
+        timeText.text = Editable.Factory.getInstance().newEditable(training.timeAmount.toString())
+        groupText.text = Editable.Factory.getInstance().newEditable(training.group)
+        fillTrainingDaysNameSpinner(training.day);
     }
 
     private fun setDaysSpinner() {

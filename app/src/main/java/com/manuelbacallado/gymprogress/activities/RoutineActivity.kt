@@ -15,7 +15,6 @@ import com.manuelbacallado.gymprogress.adapters.RoutineAdapter
 import com.manuelbacallado.gymprogress.interfaces.RecyclerViewListeners
 import com.manuelbacallado.gymprogress.models.Routine
 import com.manuelbacallado.gymprogress.presenters.RoutinePresenter
-import com.manuelbacallado.gymprogress.routers.RoutineRouter
 
 import kotlinx.android.synthetic.main.routine_activity.*
 import kotlinx.android.synthetic.main.recycler_view.*
@@ -27,8 +26,7 @@ class RoutineActivity : AppCompatActivity() {
     private val layoutManager by lazy { LinearLayoutManager(this) }
     private var longClickItemPosition: Int = 0
 
-    private var routinePresenter = RoutinePresenter();
-    private var routineRouter = RoutineRouter(this)
+    private var routinePresenter = RoutinePresenter(this);
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +36,7 @@ class RoutineActivity : AppCompatActivity() {
         routinePresenter.init(applicationContext);
         setRecycler(routinePresenter.getItems() as ArrayList<Routine>)
         fab.setOnClickListener { view ->
-            routineRouter.goToCreate()
+            routinePresenter.goToCreate()
         }
     }
 
@@ -50,7 +48,7 @@ class RoutineActivity : AppCompatActivity() {
         routineRecycler.layoutManager = layoutManager
         routineAdapter = (RoutineAdapter(list, object: RecyclerViewListeners {
             override fun onClick(concrete: Any, position: Int) {
-                routineRouter.goToNextSection(list.get(position).routineId)
+                routinePresenter.goToNextSection(list.get(position).routineId)
             }
 
             override fun onLongClick(concrete: Any, position: Int) {
@@ -71,7 +69,7 @@ class RoutineActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.edit ->{
-                routineRouter.goToEdit(routinePresenter.getItem(longClickItemPosition))
+                routinePresenter.goToEdit(routinePresenter.getItem(longClickItemPosition))
                 return true
             }
             R.id.delete ->{

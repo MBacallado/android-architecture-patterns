@@ -6,7 +6,7 @@ import com.manuelbacallado.gymprogress.interfaces.Init
 import com.manuelbacallado.gymprogress.interfaces.PresenterInteractorFunctions
 import com.manuelbacallado.gymprogress.models.Routine
 
-class RoutineInteractor : PresenterInteractorFunctions, Init{
+class RoutineInteractor() : PresenterInteractorFunctions, Init{
 
     private val list: ArrayList<Routine> by lazy { refreshData() }
     private lateinit var db : RoutineDAO
