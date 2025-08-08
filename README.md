@@ -47,4 +47,4 @@ Developed and taught by **Manuel Bacallado**.
 
 ## 🔍 Keywords (for discoverability)
 
-Android · Kotlin · Mobile App Development, MVP, MVVM, VIPER, Clean Architecture, Educational Project.
+Android · Kotlin · Mobile App Development · MVP · MVVM · VIPER · Clean Architecture · Educational Project.
